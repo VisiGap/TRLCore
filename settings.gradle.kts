@@ -43,8 +43,8 @@ if (!file(".git").exists()) {
 
 rootProject.name = "trlcore-finally"
 
-// Note: Still using "leaf-api" and "leaf-server" module names for compatibility
-for (name in listOf("leaf-api", "leaf-server")) {
+// Note: Renamed to "trlcore-api" and "trlcore-server"
+for (name in listOf("trlcore-api", "trlcore-server")) {
     val projName = name.lowercase(Locale.ENGLISH)
     include(projName)
 }

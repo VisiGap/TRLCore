@@ -21,12 +21,11 @@ public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
 
     public LeafVersionFetcher() {
         super(
-            "https://www.leafmc.one/download",
-            "Winds Studio",
-            "Leaf",
-            "Winds-Studio",
-            "Leaf"
-        );
+                "https://github.com/TRL-Plugin/TRLCore", // TODO: Update URL
+                "TRL-Plugin",
+                "TRLCore-Finally",
+                "TRL-Plugin",
+                "TRLCore-Finally");
     }
 
     @Override
@@ -46,15 +45,15 @@ public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
     private static int fetchDistanceFromLeafApi(final ServerBuildInfo build, final int current) {
         try {
             try (final BufferedReader reader = Resources.asCharSource(
-                URI.create("https://api.leafmc.one/v2/projects/leaf/versions/" + build.minecraftVersionId()).toURL(),
-                StandardCharsets.UTF_8
-            ).openBufferedStream()) {
+                    URI.create("https://api.leafmc.one/v2/projects/leaf/versions/" + build.minecraftVersionId())
+                            .toURL(),
+                    StandardCharsets.UTF_8).openBufferedStream()) {
                 final JsonObject json = new Gson().fromJson(reader, JsonObject.class);
                 final JsonArray builds = json.getAsJsonArray("builds");
                 final int latest = StreamSupport.stream(builds.spliterator(), false)
-                    .mapToInt(JsonElement::getAsInt)
-                    .max()
-                    .orElseThrow();
+                        .mapToInt(JsonElement::getAsInt)
+                        .max()
+                        .orElseThrow();
                 return latest - current;
             } catch (final JsonSyntaxException ex) {
                 LOGGER.error("Error parsing json from Leaf's downloads API", ex);
