@@ -20,6 +20,11 @@ subprojects {
     }
 
     repositories {
+        // Aliyun mirrors (faster in China)
+        maven("https://maven.aliyun.com/repository/public/")
+        maven("https://maven.aliyun.com/repository/central/")
+        
+        // Original repositories (fallback)
         mavenCentral()
         maven(paperMavenPublicUrl)
         maven(leafMavenPublicUrl)

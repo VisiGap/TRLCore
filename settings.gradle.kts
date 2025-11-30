@@ -2,8 +2,14 @@ import java.util.Locale
 
 pluginManagement {
     repositories {
-        gradlePluginPortal()
+        // PaperMC repository first (for paperweight plugin)
         maven("https://repo.papermc.io/repository/maven-public/")
+        
+        // Gradle plugin portal 
+        gradlePluginPortal()
+        
+        // Aliyun mirror for common plugins (fallback)
+        maven("https://maven.aliyun.com/repository/gradle-plugin/")
     }
 }
 
