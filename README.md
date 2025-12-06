@@ -1,4 +1,4 @@
-<img src="public/image/leaf_banner.png" alt="TRLCore-Finally">
+<img src="public/image/leaf_banner.png" alt="Leaf">
 <div align="center">
 
 [![Download](https://img.shields.io/badge/releases-blue?label=download&style=for-the-badge&colorA=19201a&colorB=298046)](https://www.leafmc.one/download)⠀
@@ -6,18 +6,15 @@
 [![Discord](https://img.shields.io/discord/1145991395388162119?label=discord&style=for-the-badge&colorA=19201a&colorB=298046)](https://discord.gg/gfgAwdSEuM)
 [![Docs](https://img.shields.io/badge/leafmc.one/docs/-blue?label=docs&style=for-the-badge&colorA=19201a&colorB=298046)](https://www.leafmc.one/docs/getting-started)
 
-**TRLCore-Finally** is a high-performance [Paper](https://papermc.io/) fork based on [Leaf](https://github.com/Winds-Studio/Leaf), customized for TRL Plugin ecosystem.
+**Leaf** is a [Paper](https://papermc.io/) fork designed to be customizable and high-performance.
 </div>
 
 > [!WARNING]
-> TRLCore-Finally is a performance-oriented fork based on Leaf. Make sure to take backups **before** switching to it. Everyone is welcome to contribute optimizations or report issues to help us improve.
+> Leaf is a performance-oriented fork. Make sure to take backups **before** switching to it. Everyone is welcome to contribute optimizations or report issues to help us improve.
 
 **English** | [中文](public/readme/README_CN.md)
 
 ## 🍃 Features
-> **Note**: TRLCore-Finally inherits all features from [Leaf](https://github.com/Winds-Studio/Leaf) and adds custom enhancements for TRL ecosystem.
-
-- **Based on [Leaf](https://github.com/Winds-Studio/Leaf)** - inheriting all Leaf optimizations
 - **Based on [Paper](https://papermc.io/)** for generic performance and flexible API
 - **Async** pathfinding, mob spawning and entity tracker
 - **Various optimizations** blending from [other forks](#-credits) and our own
@@ -29,30 +26,26 @@
 - **More customized** relying on features of [Purpur](https://github.com/PurpurMC/Purpur)
 - **Linear region file format**, to save disk space
 - **Maintenance friendly**, integrating with [Sentry](https://sentry.io/welcome/) of [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) to easily track all errors coming from your server in extreme detail
-- **TRLCore enhancements** - code quality improvements and custom optimizations
 - And more...
 
-## 📈 About TRLCore-Finally
-TRLCore-Finally is a custom fork of [Leaf](https://github.com/Winds-Studio/Leaf) with additional code quality improvements and optimizations for the TRL Plugin ecosystem.
+## 📈 bStats
+[![bStats Graph Data](https://bstats.org/signatures/server-implementation/Leaf.svg)](https://bstats.org/plugin/server-implementation/Leaf)
 
-## 📫 Original Leaf Project
-- **Original Project**: [Leaf by Winds-Studio](https://github.com/Winds-Studio/Leaf)
-- **Leaf Discord**: [`https://discord.com/invite/gfgAwdSEuM`](https://discord.com/invite/gfgAwdSEuM)
-- **Leaf QQ Group**: `619278377`
-- **Support Leaf**: [Open Collective](https://opencollective.com/Winds-Studio) or [Dreeam's AFDIAN](https://afdian.com/a/Dreeam)
+## 📫 Contact
+- Discord: [`https://discord.com/invite/gfgAwdSEuM`](https://discord.com/invite/gfgAwdSEuM)
+- QQ Group: `619278377`
+
+## 📫 Donation
+If you love our work, feel free to donate via our [Open Collective](https://opencollective.com/Winds-Studio) or [Dreeam's AFDIAN](https://afdian.com/a/Dreeam) :)
 
 ## 📥 Download
-TRLCore-Finally builds are available in this repository's releases section.
-
-For original Leaf builds, visit [Leaf Website](https://www.leafmc.one/download) or [Leaf GitHub Releases](https://github.com/Winds-Studio/Leaf/releases)
+Download Leaf from our [Website](https://www.leafmc.one/download) or get latest build in [GitHub Releases](https://github.com/Winds-Studio/Leaf/releases)
 
 ## 📄 Documentation
-For general Paper/Leaf documentation: [Leaf Docs](https://www.leafmc.one/docs/getting-started)
-
-TRLCore-specific enhancements are documented in this repository.
+Documentation about how to use/configure Leaf: [Leaf Docs](https://www.leafmc.one/docs/getting-started)
 
 ## 📦 Building
-Building a TRLCore-Finally Paperclip JAR for distribution:
+Building a Paperclip JAR for distribution:
 ```bash
 ./gradlew applyAllPatches && ./gradlew createMojmapPaperclipJar
 ```

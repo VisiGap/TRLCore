@@ -20,11 +20,6 @@ subprojects {
     }
 
     repositories {
-        // Aliyun mirrors (faster in China)
-        maven("https://maven.aliyun.com/repository/public/")
-        maven("https://maven.aliyun.com/repository/central/")
-        
-        // Original repositories (fallback)
         mavenCentral()
         maven(paperMavenPublicUrl)
         maven(leafMavenPublicUrl)
@@ -69,21 +64,22 @@ subprojects {
 paperweight {
     upstreams.paper {
         ref = providers.gradleProperty("paperCommit")
+        repoUri = file("paper")
 
         patchFile {
             path = "paper-server/build.gradle.kts"
-            outputFile = file("trlcore-server/build.gradle.kts")
-            patchFile = file("trlcore-server/build.gradle.kts.patch")
+            outputFile = file("leaf-server/build.gradle.kts")
+            patchFile = file("leaf-server/build.gradle.kts.patch")
         }
         patchFile {
             path = "paper-api/build.gradle.kts"
-            outputFile = file("trlcore-api/build.gradle.kts")
-            patchFile = file("trlcore-api/build.gradle.kts.patch")
+            outputFile = file("leaf-api/build.gradle.kts")
+            patchFile = file("leaf-api/build.gradle.kts.patch")
         }
         patchDir("paperApi") {
             upstreamPath = "paper-api"
             excludes = setOf("build.gradle.kts")
-            patchesDir = file("trlcore-api/paper-patches")
+            patchesDir = file("leaf-api/paper-patches")
             outputDir = file("paper-api")
         }
     }
