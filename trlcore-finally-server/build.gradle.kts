@@ -127,7 +127,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
 }
 
 dependencies {
-    implementation(project(":leaf-api")) // Leaf - project setup
+    implementation(project(":trlcore-finally-api")) // TRLCore-Finally - project setup
     implementation("ca.spottedleaf:concurrentutil:0.0.7")
     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
