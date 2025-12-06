@@ -21,12 +21,11 @@ public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
 
     public LeafVersionFetcher() {
         super(
-            "https://www.leafmc.one/download",
-            "Winds Studio",
-            "Leaf",
-            "Winds-Studio",
-            "Leaf"
-        );
+                "https://github.com/TRL-Team/TRLCore-Finally",
+                "TRL Team",
+                "TRLCore-Finally",
+                "TRL-Team",
+                "TRLCore-Finally");
     }
 
     @Override
@@ -37,27 +36,27 @@ public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
         final Optional<String> gitCommit = build.gitCommit();
         final OptionalInt buildNumber = build.buildNumber();
         if (gitBranch.isPresent() && gitCommit.isPresent() && buildNumber.isPresent()) {
-            distance = fetchDistanceFromLeafApi(build, buildNumber.getAsInt());
+            distance = fetchDistanceFromApi(build, buildNumber.getAsInt());
         }
 
         return distance;
     }
 
-    private static int fetchDistanceFromLeafApi(final ServerBuildInfo build, final int current) {
+    private static int fetchDistanceFromApi(final ServerBuildInfo build, final int current) {
         try {
             try (final BufferedReader reader = Resources.asCharSource(
-                URI.create("https://api.leafmc.one/v2/projects/leaf/versions/" + build.minecraftVersionId()).toURL(),
-                StandardCharsets.UTF_8
-            ).openBufferedStream()) {
+                    URI.create("https://api.leafmc.one/v2/projects/leaf/versions/" + build.minecraftVersionId())
+                            .toURL(),
+                    StandardCharsets.UTF_8).openBufferedStream()) {
                 final JsonObject json = new Gson().fromJson(reader, JsonObject.class);
                 final JsonArray builds = json.getAsJsonArray("builds");
                 final int latest = StreamSupport.stream(builds.spliterator(), false)
-                    .mapToInt(JsonElement::getAsInt)
-                    .max()
-                    .orElseThrow();
+                        .mapToInt(JsonElement::getAsInt)
+                        .max()
+                        .orElseThrow();
                 return latest - current;
             } catch (final JsonSyntaxException ex) {
-                LOGGER.error("Error parsing json from Leaf's downloads API", ex);
+                LOGGER.error("Error parsing json from TRLCore-Finally's API", ex);
                 return DISTANCE_ERROR;
             }
         } catch (final IOException e) {
