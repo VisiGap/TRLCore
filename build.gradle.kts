@@ -64,7 +64,6 @@ subprojects {
 paperweight {
     upstreams.paper {
         ref = providers.gradleProperty("paperCommit")
-        repoUri = file("paper")
 
         patchFile {
             path = "paper-server/build.gradle.kts"
