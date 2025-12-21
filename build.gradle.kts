@@ -2,12 +2,35 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    `maven-publish`
+    java // TODO java launcher tasks
     id("io.papermc.paperweight.patcher") version "2.0.0-beta.18"
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-val trlcoreMavenUrl = "https://maven.leafmc.one/snapshots/" // TRLCore-Finally Maven
+val githubMavenUrl = "https://maven.pkg.github.com/chuyuewei/TRLCore"
+
+paperweight {
+    upstreams.paper {
+        ref = providers.gradleProperty("paperCommit")
+
+        patchFile {
+            path = "paper-server/build.gradle.kts"
+            outputFile = file("purpur-server/build.gradle.kts")
+            patchFile = file("purpur-server/build.gradle.kts.patch")
+        }
+        patchFile {
+            path = "paper-api/build.gradle.kts"
+            outputFile = file("purpur-api/build.gradle.kts")
+            patchFile = file("purpur-api/build.gradle.kts.patch")
+        }
+        patchDir("paperApi") {
+            upstreamPath = "paper-api"
+            excludes = setOf("build.gradle.kts")
+            patchesDir = file("purpur-api/paper-patches")
+            outputDir = file("paper-api")
+        }
+    }
+}
 
 subprojects {
     apply(plugin = "java-library")
@@ -19,67 +42,57 @@ subprojects {
         }
     }
 
-    repositories {
-        mavenCentral()
-        maven(paperMavenPublicUrl)
-        maven(trlcoreMavenUrl)
-    }
-
-    tasks.withType<AbstractArchiveTask>().configureEach {
-        isPreserveFileTimestamps = false
-        isReproducibleFileOrder = true
-    }
-    tasks.withType<JavaCompile>().configureEach {
+    tasks.withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
         options.release = 21
         options.isFork = true
         options.compilerArgs.addAll(listOf("-Xlint:-deprecation", "-Xlint:-removal"))
     }
-    tasks.withType<Javadoc>().configureEach {
+    tasks.withType<Javadoc> {
         options.encoding = Charsets.UTF_8.name()
     }
-    tasks.withType<ProcessResources>().configureEach {
+    tasks.withType<ProcessResources> {
         filteringCharset = Charsets.UTF_8.name()
     }
-    tasks.withType<Test>().configureEach {
+    tasks.withType<Test> {
         testLogging {
             showStackTraces = true
             exceptionFormat = TestExceptionFormat.FULL
             events(TestLogEvent.STANDARD_OUT)
         }
     }
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
+
+    repositories {
+        mavenCentral()
+        maven(paperMavenPublicUrl)
+        maven("https://jitpack.io")
+    }
 
     extensions.configure<PublishingExtension> {
         repositories {
-            maven(trlcoreMavenUrl) {
-                name = "trlcore-finally"
-
-                credentials.username = System.getenv("REPO_USER")
-                credentials.password = System.getenv("REPO_PASSWORD")
+            maven(githubMavenUrl) {
+                name = "GitHubPackages"
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR") ?: ""
+                    password = System.getenv("GITHUB_TOKEN") ?: ""
+                }
             }
         }
     }
 }
 
-paperweight {
-    upstreams.paper {
-        ref = providers.gradleProperty("paperCommit")
+tasks.register("printMinecraftVersion") {
+    doLast {
+        println(providers.gradleProperty("mcVersion").get().trim())
+    }
+}
 
-        patchFile {
-            path = "paper-server/build.gradle.kts"
-            outputFile = file("trlcore-finally-server/build.gradle.kts")
-            patchFile = file("trlcore-finally-server/build.gradle.kts.patch")
-        }
-        patchFile {
-            path = "paper-api/build.gradle.kts"
-            outputFile = file("trlcore-finally-api/build.gradle.kts")
-            patchFile = file("trlcore-finally-api/build.gradle.kts.patch")
-        }
-        patchDir("paperApi") {
-            upstreamPath = "paper-api"
-            excludes = setOf("build.gradle.kts")
-            patchesDir = file("trlcore-finally-api/paper-patches")
-            outputDir = file("paper-api")
-        }
+tasks.register("printPurpurVersion") {
+    doLast {
+        println(project.version)
     }
 }

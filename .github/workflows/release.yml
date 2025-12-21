@@ -1,0 +1,84 @@
+# TRLCore Release Workflow
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.21.11-1)'
+        required: true
+
+env:
+  JAVA_VERSION: '21'
+  MC_VERSION: '1.21.11'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+          
+      - name: Configure Git
+        run: git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"
+          
+      - name: Build
+        run: |
+          ./gradlew applyAllPatches --stacktrace
+          ./gradlew build --stacktrace
+          ./gradlew createMojmapPaperclipJar --stacktrace
+          
+      - name: Prepare Release
+        id: prepare
+        run: |
+          VERSION="${{ github.event.inputs.version || github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          JAR=$(find purpur-server/build/libs -name "*paperclip*.jar" | head -1)
+          RELEASE_JAR="TRLCore-${{ env.MC_VERSION }}-$VERSION.jar"
+          cp "$JAR" "./$RELEASE_JAR"
+          
+          echo "jar=$RELEASE_JAR" >> $GITHUB_OUTPUT
+          echo "sha256=$(sha256sum $RELEASE_JAR | cut -d ' ' -f 1)" >> $GITHUB_OUTPUT
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "TRLCore ${{ env.MC_VERSION }}-${{ steps.prepare.outputs.version }}"
+          body: |
+            ## TRLCore ${{ env.MC_VERSION }}
+            
+            基于 Purpur 的高性能 Minecraft 服务器核心。
+            
+            **SHA256**: `${{ steps.prepare.outputs.sha256 }}`
+            
+            ### 兼容性
+            - Java 21 LTS
+            - 兼容 Spigot/Paper/Purpur 插件
+          files: ${{ steps.prepare.outputs.jar }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Publish API
+        run: ./gradlew publish --stacktrace
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
