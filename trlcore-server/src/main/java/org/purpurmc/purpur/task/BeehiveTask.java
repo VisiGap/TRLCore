@@ -32,13 +32,13 @@ public class BeehiveTask implements PluginMessageListener {
     }
 
     public void register() {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this.plugin, ClientboundBeehivePayload.TYPE.id().toString());
-        Bukkit.getMessenger().registerIncomingPluginChannel(this.plugin, ServerboundBeehivePayload.TYPE.id().toString(), this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this.plugin, ClientboundBeehivePayload.PACKET_TYPE.id().toString());
+        Bukkit.getMessenger().registerIncomingPluginChannel(this.plugin, ServerboundBeehivePayload.PACKET_TYPE.id().toString(), this);
     }
 
     public void unregister() {
-        Bukkit.getMessenger().unregisterOutgoingPluginChannel(this.plugin, ClientboundBeehivePayload.TYPE.id().toString());
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(this.plugin, ServerboundBeehivePayload.TYPE.id().toString());
+        Bukkit.getMessenger().unregisterOutgoingPluginChannel(this.plugin, ClientboundBeehivePayload.PACKET_TYPE.id().toString());
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(this.plugin, ServerboundBeehivePayload.PACKET_TYPE.id().toString());
     }
 
     @Override

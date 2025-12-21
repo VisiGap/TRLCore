@@ -387,10 +387,9 @@ public class PurpurConfig {
             log(Level.WARNING, "Using value of 0 to prevent issues");
         }
         lightningRodRange = getInt("settings.blocks.lightning_rod.range", lightningRodRange);
-        ArrayList<String> defaultCurses = new ArrayList<>(){{
-            add("minecraft:binding_curse");
-            add("minecraft:vanishing_curse");
-        }};
+        ArrayList<String> defaultCurses = new ArrayList<>();
+        defaultCurses.add("minecraft:binding_curse");
+        defaultCurses.add("minecraft:vanishing_curse");
         if (version < 24 && !getBoolean("settings.blocks.grindstone.ignore-curses", true)) {
             defaultCurses.clear();
         }

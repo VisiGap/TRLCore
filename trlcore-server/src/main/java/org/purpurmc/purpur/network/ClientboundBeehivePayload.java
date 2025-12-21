@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ClientboundBeehivePayload(BlockPos pos, int numOfBees) implements CustomPacketPayload {
     public static final StreamCodec<FriendlyByteBuf, ClientboundBeehivePayload> STREAM_CODEC = CustomPacketPayload.codec(ClientboundBeehivePayload::write, ClientboundBeehivePayload::new);
-    public static final Type<ClientboundBeehivePayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath("purpur", "beehive_s2c"));
+    public static final Type<ClientboundBeehivePayload> PACKET_TYPE = new Type<>(Identifier.fromNamespaceAndPath("purpur", "beehive_s2c"));
 
     public ClientboundBeehivePayload(FriendlyByteBuf friendlyByteBuf) {
         this(friendlyByteBuf.readBlockPos(),  friendlyByteBuf.readInt());
@@ -22,6 +22,6 @@ public record ClientboundBeehivePayload(BlockPos pos, int numOfBees) implements 
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+        return PACKET_TYPE;
     }
 }
