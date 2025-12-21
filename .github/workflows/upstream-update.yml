@@ -1,0 +1,142 @@
+# TRLCore Upstream Update Workflow
+# 定期检查并更新上游 Purpur 仓库
+name: Upstream Update
+
+on:
+  schedule:
+    # 每天 UTC 时间 6:00 (北京时间 14:00) 检查更新
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '强制更新（忽略版本检查）'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  JAVA_VERSION: '21'
+  UPSTREAM_REPO: 'PurpurMC/Purpur'
+  UPSTREAM_BRANCH: 'ver/1.21.11'
+
+jobs:
+  check-update:
+    runs-on: ubuntu-latest
+    outputs:
+      has_update: ${{ steps.check.outputs.has_update }}
+      upstream_commit: ${{ steps.check.outputs.upstream_commit }}
+      current_commit: ${{ steps.check.outputs.current_commit }}
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Check Upstream Updates
+        id: check
+        run: |
+          # 获取上游最新 commit
+          UPSTREAM_COMMIT=$(git ls-remote https://github.com/${{ env.UPSTREAM_REPO }}.git refs/heads/${{ env.UPSTREAM_BRANCH }} | cut -f1)
+          echo "upstream_commit=$UPSTREAM_COMMIT" >> $GITHUB_OUTPUT
+          
+          # 获取当前 paperCommit
+          CURRENT_COMMIT=$(grep 'paperCommit' gradle.properties | cut -d'=' -f2 | tr -d ' ')
+          echo "current_commit=$CURRENT_COMMIT" >> $GITHUB_OUTPUT
+          
+          # 比较
+          if [ "$UPSTREAM_COMMIT" != "$CURRENT_COMMIT" ] || [ "${{ inputs.force }}" == "true" ]; then
+            echo "has_update=true" >> $GITHUB_OUTPUT
+            echo "🔄 发现上游更新: $CURRENT_COMMIT -> $UPSTREAM_COMMIT"
+          else
+            echo "has_update=false" >> $GITHUB_OUTPUT
+            echo "✅ 已是最新版本: $CURRENT_COMMIT"
+          fi
+
+  update:
+    needs: check-update
+    if: needs.check-update.outputs.has_update == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+          
+      - name: Configure Git
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          
+      - name: Update Upstream Commit
+        id: update
+        run: |
+          NEW_COMMIT="${{ needs.check-update.outputs.upstream_commit }}"
+          OLD_COMMIT="${{ needs.check-update.outputs.current_commit }}"
+          
+          # 更新 gradle.properties
+          sed -i "s/paperCommit = .*/paperCommit = $NEW_COMMIT/" gradle.properties
+          
+          # 获取上游提交信息
+          COMMIT_MSG=$(curl -s "https://api.github.com/repos/${{ env.UPSTREAM_REPO }}/commits/$NEW_COMMIT" | jq -r '.commit.message' | head -1)
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          
+          # 创建分支
+          BRANCH_NAME="upstream-update/$(date +%Y%m%d)"
+          git checkout -b "$BRANCH_NAME"
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          
+      - name: Test Build
+        id: build
+        continue-on-error: true
+        run: |
+          ./gradlew applyAllPatches --stacktrace
+          ./gradlew build --stacktrace
+          
+      - name: Commit and Push
+        run: |
+          git add gradle.properties
+          git commit -m "chore: update upstream to ${{ needs.check-update.outputs.upstream_commit }}"
+          git push origin ${{ steps.update.outputs.branch }}
+          
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.update.outputs.branch }}
+          base: main
+          title: "⬆️ Update upstream Purpur"
+          body: |
+            ## 上游更新
+            
+            **上游仓库**: [${{ env.UPSTREAM_REPO }}](https://github.com/${{ env.UPSTREAM_REPO }})
+            **分支**: `${{ env.UPSTREAM_BRANCH }}`
+            
+            ### 变更
+            - **旧版本**: `${{ needs.check-update.outputs.current_commit }}`
+            - **新版本**: `${{ needs.check-update.outputs.upstream_commit }}`
+            - **提交信息**: ${{ steps.update.outputs.commit_msg }}
+            
+            ### 构建状态
+            ${{ steps.build.outcome == 'success' && '✅ 构建成功' || '⚠️ 构建失败，需要手动修复补丁' }}
+            
+            ### 上游变更
+            [查看完整变更](https://github.com/${{ env.UPSTREAM_REPO }}/compare/${{ needs.check-update.outputs.current_commit }}...${{ needs.check-update.outputs.upstream_commit }})
+            
+            ---
+            *此 PR 由 GitHub Actions 自动创建*
+          labels: |
+            upstream
+            automated
+          draft: ${{ steps.build.outcome != 'success' }}

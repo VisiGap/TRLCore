@@ -12,27 +12,46 @@ plugins {
 }
 
 if (!file(".git").exists()) {
-    // TRLCore-Finally start - project setup
     val errorText = """
         
         =====================[ ERROR ]=====================
-         The TRLCore-Finally project directory is not a properly cloned Git repository.
+         The Purpur project directory is not a properly cloned Git repository.
          
-         In order to build TRLCore-Finally from source you must clone
-         the TRLCore-Finally repository using Git, not download a code
+         In order to build Purpur from source you must clone
+         the Purpur repository using Git, not download a code
          zip from GitHub.
          
-         See https://github.com/PaperMC/Paper/blob/main/CONTRIBUTING.md
-         for further information on building and modifying Paper forks.
+         Built Purpur jars are available for download at
+         https://purpurmc.org/downloads
+         
+         See https://github.com/PurpurMC/Purpur/blob/HEAD/CONTRIBUTING.md
+         for further information on building and modifying Purpur.
         ===================================================
     """.trimIndent()
-    // TRLCore-Finally end - project setup
     error(errorText)
 }
 
-rootProject.name = "trlcore-finally"
-
-for (name in listOf("trlcore-finally-api", "trlcore-finally-server")) {
+rootProject.name = "purpur"
+for (name in listOf("purpur-api", "purpur-server")) {
     val projName = name.lowercase(Locale.ENGLISH)
     include(projName)
+    findProject(":$projName")!!.projectDir = file(name)
+}
+
+optionalInclude("test-plugin")
+
+fun optionalInclude(name: String, op: (ProjectDescriptor.() -> Unit)? = null) {
+    val settingsFile = file("$name.settings.gradle.kts")
+    if (settingsFile.exists()) {
+        apply(from = settingsFile)
+        findProject(":$name")?.let { op?.invoke(it) }
+    } else {
+        settingsFile.writeText(
+            """
+            // Uncomment to enable the '$name' project
+            // include(":$name")
+
+            """.trimIndent()
+        )
+    }
 }

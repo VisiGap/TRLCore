@@ -1,31 +1,66 @@
-# Mac filesystem dust
+# JVM crash related
+core.*
+hs_err_pid*
+
+# Intellij
+/.idea/*
+!/.idea/runConfigurations
+!/.idea/icon.svg
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# netbeans
+nbproject/
+nbactions.xml
+
+# Gradle
+!gradle-wrapper.jar
+.gradle/
+build/
+*/build/
+
+# we use maven!
+build.xml
+
+# Maven
+log/
+target/
+dependency-reduced-pom.xml
+
+# various other potential build files
+build/
+bin/
+dist/
+manifest.mf
+
+# Mac
 .DS_Store/
 .DS_Store
-
-# Linux temp files
-*~
 
 # vim
 .*.sw[a-p]
 
-# IntelliJ
-*.iml
-.idea
-!.idea/icon.svg
+# Linux temp files
+*~
 
-# Gradle
-!gradle/wrapper/gradle-wrapper.jar
-.gradle
-build
+# other stuff
+/run
 
-# Leaf
-build-data/dev-imports.txt
-leaf-archived-patches/todo
-run
+/purpur-server/build.gradle.kts
+/purpur-server/src/minecraft
+/paper-server
+/purpur-api/build.gradle.kts
+/paper-api
+*.jar
+test-plugin.settings.gradle.kts
+source
 
-leaf-api/build.gradle.kts
-leaf-server/build.gradle.kts
-leaf-server/src/minecraft
-paper-api
-paper-server
-paper
+#Kiro
+.kiro/
