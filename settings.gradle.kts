@@ -15,24 +15,24 @@ if (!file(".git").exists()) {
     val errorText = """
         
         =====================[ ERROR ]=====================
-         The Purpur project directory is not a properly cloned Git repository.
+         The TRLCore project directory is not a properly cloned Git repository.
          
-         In order to build Purpur from source you must clone
-         the Purpur repository using Git, not download a code
+         In order to build TRLCore from source you must clone
+         the TRLCore repository using Git, not download a code
          zip from GitHub.
          
-         Built Purpur jars are available for download at
-         https://purpurmc.org/downloads
+         Built TRLCore jars are available for download at
+         https://github.com/chuyuewei/TRLCore/releases
          
-         See https://github.com/PurpurMC/Purpur/blob/HEAD/CONTRIBUTING.md
-         for further information on building and modifying Purpur.
+         See https://github.com/chuyuewei/TRLCore/blob/HEAD/CONTRIBUTING.md
+         for further information on building and modifying TRLCore.
         ===================================================
     """.trimIndent()
     error(errorText)
 }
 
-rootProject.name = "purpur"
-for (name in listOf("purpur-api", "purpur-server")) {
+rootProject.name = "trlcore"
+for (name in listOf("trlcore-api", "trlcore-server")) {
     val projName = name.lowercase(Locale.ENGLISH)
     include(projName)
     findProject(":$projName")!!.projectDir = file(name)

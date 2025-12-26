@@ -62,5 +62,12 @@ manifest.mf
 test-plugin.settings.gradle.kts
 source
 
-#Kiro
-.kiro/
+# Security - Prevent accidental commit of sensitive information
+gradle.properties.local
+*.env
+.env.*
+**/secrets/
+**/*secret*
+**/*token*
+**/*key*
+**/*password*
